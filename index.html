@@ -4,36 +4,199 @@
   <meta charset="UTF-8" />
   <title>Malla Interactiva Técnico Veterinario</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; }
-    details { margin-bottom: 10px; }
-    summary { font-weight: bold; cursor: pointer; }
-    .materia { margin-left: 20px; }
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 20px; background: #f9f9f9; }
+    h1 { text-align: center; }
+    .semestre { margin-bottom: 15px; background: white; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .semestre-header {
+      padding: 10px 15px;
+      background: #4a90e2;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      user-select: none;
+      border-radius: 6px 6px 0 0;
+    }
+    .materias-list {
+      display: none;
+      padding: 10px 20px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .materia {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+    }
+    .materia:hover {
+      background-color: #e6f0ff;
+    }
+    .materia.active {
+      background-color: #c2dafd;
+      font-weight: bold;
+    }
+    #detalle {
+      margin-top: 20px;
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      min-height: 120px;
+    }
+    #search {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
+
   <h1>Malla Curricular - Técnico Veterinario</h1>
   
-  <details>
-    <summary>Primer Semestre</summary>
-    <div class="materia">
-      <p><strong>Biología Básica</strong></p>
-      <p>Prerrequisitos: Ninguno</p>
-      <p>Descripción: Introducción a los conceptos básicos de biología.</p>
-    </div>
-    <div class="materia">
-      <p><strong>Introducción a la Veterinaria</strong></p>
-      <p>Prerrequisitos: Ninguno</p>
-      <p>Descripción: Panorama general de la carrera y áreas de especialización.</p>
-    </div>
-  </details>
-  
-  <details>
-    <summary>Segundo Semestre</summary>
-    <div class="materia">
-      <p><strong>Anatomía Animal</strong></p>
-      <p>Prerrequisitos: Biología Básica</p>
-      <p>Descripción: Estudio de la estructura de los animales.</p>
-    </div>
-  </details>
+  <input type="text" id="search" placeholder="Buscar materia..." />
+
+  <div id="malla"></div>
+
+  <div id="detalle">
+    <em>Selecciona una materia para ver detalles aquí.</em>
+  </div>
+
+  <script>
+    const mallaData = [
+      {
+        semestre: "Primer Semestre",
+        materias: [
+          {
+            nombre: "Biología Básica",
+            prerrequisitos: "Ninguno",
+            descripcion: "Introducción a los conceptos básicos de biología.",
+            certificados: ["Certificado de Biología Básica"]
+          },
+          {
+            nombre: "Introducción a la Veterinaria",
+            prerrequisitos: "Ninguno",
+            descripcion: "Panorama general de la carrera y áreas de especialización.",
+            certificados: []
+          }
+        ]
+      },
+      {
+        semestre: "Segundo Semestre",
+        materias: [
+          {
+            nombre: "Anatomía Animal",
+            prerrequisitos: "Biología Básica",
+            descripcion: "Estudio de la estructura de los animales.",
+            certificados: ["Certificado de Anatomía"]
+          },
+          {
+            nombre: "Fisiología",
+            prerrequisitos: "Anatomía Animal",
+            descripcion: "Funciones y procesos vitales en animales.",
+            certificados: []
+          }
+        ]
+      }
+      // Puedes agregar más semestres y materias aquí
+    ];
+
+    const mallaDiv = document.getElementById('malla');
+    const detalleDiv = document.getElementById('detalle');
+    const searchInput = document.getElementById('search');
+
+    function crearMalla(data) {
+      mallaDiv.innerHTML = '';
+      data.forEach((sem, i) => {
+        const semDiv = document.createElement('div');
+        semDiv.className = 'semestre';
+
+        const header = document.createElement('div');
+        header.className = 'semestre-header';
+        header.textContent = sem.semestre;
+        header.addEventListener('click', () => {
+          const list = semDiv.querySelector('.materias-list');
+          if (list.style.display === 'block') {
+            list.style.display = 'none';
+          } else {
+            list.style.display = 'block';
+          }
+        });
+        semDiv.appendChild(header);
+
+        const list = document.createElement('div');
+        list.className = 'materias-list';
+
+        sem.materias.forEach((mat) => {
+          const matDiv = document.createElement('div');
+          matDiv.className = 'materia';
+          matDiv.textContent = mat.nombre;
+          matDiv.addEventListener('click', () => {
+            // Quitar active de otras materias
+            document.querySelectorAll('.materia').forEach(m => m.classList.remove('active'));
+            matDiv.classList.add('active');
+
+            mostrarDetalle(mat);
+          });
+          list.appendChild(matDiv);
+        });
+
+        semDiv.appendChild(list);
+        mallaDiv.appendChild(semDiv);
+      });
+    }
+
+    function mostrarDetalle(materia) {
+      detalleDiv.innerHTML = `
+        <h2>${materia.nombre}</h2>
+        <p><strong>Prerrequisitos:</strong> ${materia.prerrequisitos}</p>
+        <p><strong>Descripción:</strong> ${materia.descripcion}</p>
+        <p><strong>Certificados:</strong> ${materia.certificados.length > 0 ? materia.certificados.join(', ') : 'Ninguno'}</p>
+      `;
+    }
+
+    function filtrarMaterias() {
+      const filtro = searchInput.value.toLowerCase();
+
+      mallaData.forEach((sem) => {
+        sem.materias.forEach(mat => {
+          mat.visible = mat.nombre.toLowerCase().includes(filtro);
+        });
+      });
+
+      // Actualizar la vista con solo materias visibles
+      mallaDiv.querySelectorAll('.semestre').forEach((semDiv, i) => {
+        const materiasDiv = semDiv.querySelector('.materias-list');
+        const materias = materiasDiv.querySelectorAll('.materia');
+        let anyVisible = false;
+
+        materias.forEach((matDiv, j) => {
+          const visible = mallaData[i].materias[j].visible;
+          matDiv.style.display = visible ? 'block' : 'none';
+          if (visible) anyVisible = true;
+        });
+
+        // Mostrar o esconder semestre según materias visibles
+        materiasDiv.style.display = anyVisible ? 'block' : 'none';
+        semDiv.querySelector('.semestre-header').style.display = anyVisible ? 'block' : 'none';
+      });
+
+      // Limpiar detalle si el seleccionado ya no es visible
+      const activo = document.querySelector('.materia.active');
+      if (activo && activo.style.display === 'none') {
+        detalleDiv.innerHTML = `<em>Selecciona una materia para ver detalles aquí.</em>`;
+      }
+    }
+
+    // Inicializar la malla completa
+    crearMalla(mallaData);
+
+    // Buscar mientras escribes
+    searchInput.addEventListener('input', filtrarMaterias);
+
+  </script>
 </body>
 </html>
