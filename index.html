@@ -40,7 +40,7 @@
       padding: 15px;
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      min-height: 120px;
+      min-height: 150px;
     }
     #search {
       width: 100%;
@@ -70,38 +70,62 @@
       {
         semestre: "Primer Semestre",
         materias: [
-          {
-            nombre: "Biología Básica",
-            prerrequisitos: "Ninguno",
-            descripcion: "Introducción a los conceptos básicos de biología.",
-            certificados: ["Certificado de Biología Básica"]
-          },
-          {
-            nombre: "Introducción a la Veterinaria",
-            prerrequisitos: "Ninguno",
-            descripcion: "Panorama general de la carrera y áreas de especialización.",
-            certificados: []
-          }
+          { nombre: "Exploración clínica", prerrequisitos: "", descripcion: "Asignatura básica sin prerrequisitos.", certificados: [] },
+          { nombre: "Prevención y control de enfermedades", prerrequisitos: "", descripcion: "Prevención y control sanitario en animales.", certificados: [] },
+          { nombre: "Dietas para la producción de animales", prerrequisitos: "", descripcion: "Nutrición y dietas para animales de producción.", certificados: [] },
+          { nombre: "Habilidades básicas de comunicación", prerrequisitos: "", descripcion: "Comunicación efectiva en el entorno veterinario.", certificados: [] },
+          { nombre: "Herramientas tecnológicas para la información y comunicación", prerrequisitos: "", descripcion: "Uso de tecnologías para el manejo de información.", certificados: [] },
+          { nombre: "Nivelación matemática", prerrequisitos: "", descripcion: "Matemáticas básicas para veterinaria.", certificados: [] },
+          { nombre: "Proceso portafolio", prerrequisitos: "", descripcion: "Desarrollo del portafolio académico.", certificados: [] }
         ]
       },
       {
         semestre: "Segundo Semestre",
         materias: [
-          {
-            nombre: "Anatomía Animal",
-            prerrequisitos: "Biología Básica",
-            descripcion: "Estudio de la estructura de los animales.",
-            certificados: ["Certificado de Anatomía"]
-          },
-          {
-            nombre: "Fisiología",
-            prerrequisitos: "Anatomía Animal",
-            descripcion: "Funciones y procesos vitales en animales.",
-            certificados: []
-          }
+          { nombre: "Asistencia quirúrgica", prerrequisitos: "Exploración clínica", descripcion: "Apoyo en procedimientos quirúrgicos.", certificados: [] },
+          { nombre: "Enfermería clínica animal", prerrequisitos: "Prevención y control de enfermedades", descripcion: "Cuidados clínicos para animales.", certificados: [] },
+          { nombre: "Reproducción y obstetricia pecuaria", prerrequisitos: "", descripcion: "Aspectos reproductivos y obstétricos en animales pecuarios.", certificados: [] },
+          { nombre: "Habilidades de comunicación efectiva", prerrequisitos: "Habilidades básicas de comunicación", descripcion: "Comunicación avanzada en el campo veterinario.", certificados: [] },
+          { nombre: "Técnicas de laboratorio", prerrequisitos: "", descripcion: "Procedimientos básicos de laboratorio.", certificados: [] },
+          { nombre: "Proceso portafolio", prerrequisitos: "", descripcion: "Desarrollo del portafolio académico.", certificados: [] }
+        ]
+      },
+      {
+        semestre: "Tercer Semestre",
+        materias: [
+          { nombre: "Primeros auxilios en mascotas", prerrequisitos: "Enfermería clínica animal, Reproducción y obstetricia pecuaria", descripcion: "Atención inicial en emergencias veterinarias.", certificados: [] },
+          { nombre: "Procedimientos quirúrgicos y terapéuticos en mascotas", prerrequisitos: "Enfermería clínica animal, Reproducción y obstetricia pecuaria", descripcion: "Técnicas quirúrgicas y terapéuticas para mascotas.", certificados: [] },
+          { nombre: "Adiestramiento canino", prerrequisitos: "", descripcion: "Técnicas básicas de adiestramiento para perros.", certificados: [] },
+          { nombre: "Aves", prerrequisitos: "", descripcion: "Cuidados y manejo de aves.", certificados: [] },
+          { nombre: "Imagenología", prerrequisitos: "Técnicas de laboratorio", descripcion: "Uso de técnicas de imagen para diagnóstico.", certificados: [] },
+          { nombre: "Inglés básico 1", prerrequisitos: "", descripcion: "Inglés básico aplicado a la veterinaria.", certificados: [] },
+          { nombre: "Fundamentos de antropología", prerrequisitos: "", descripcion: "Bases antropológicas para el trabajo veterinario.", certificados: [] },
+          { nombre: "Formación complementaria", prerrequisitos: "", descripcion: "Cursos complementarios varios.", certificados: [] },
+          { nombre: "Proceso portafolio", prerrequisitos: "", descripcion: "Desarrollo del portafolio académico.", certificados: [] }
+        ]
+      },
+      {
+        semestre: "Cuarto Semestre",
+        materias: [
+          { nombre: "Mascotas exóticas", prerrequisitos: "", descripcion: "Manejo de mascotas no convencionales.", certificados: [] },
+          { nombre: "Apoyo a la gestión de centros veterinarios", prerrequisitos: "", descripcion: "Administración y gestión en centros veterinarios.", certificados: [] },
+          { nombre: "Cuidados estéticos", prerrequisitos: "", descripcion: "Técnicas de estética para animales.", certificados: [] },
+          { nombre: "Labores de criaderos", prerrequisitos: "Reproducción y obstetricia pecuaria", descripcion: "Manejo y labores en criaderos.", certificados: [] },
+          { nombre: "Mentalidad emprendedora", prerrequisitos: "", descripcion: "Desarrollo de habilidades emprendedoras.", certificados: [] },
+          { nombre: "Inglés básico 2", prerrequisitos: "Inglés básico 1", descripcion: "Inglés intermedio aplicado.", certificados: [] },
+          { nombre: "Ética para el trabajo", prerrequisitos: "Fundamentos de antropología", descripcion: "Valores y ética profesional.", certificados: [] },
+          { nombre: "Curso formación cristiana", prerrequisitos: "", descripcion: "Formación religiosa y ética.", certificados: [] },
+          { nombre: "Formación complementaria", prerrequisitos: "", descripcion: "Cursos complementarios varios.", certificados: [] },
+          { nombre: "Proceso portafolio", prerrequisitos: "", descripcion: "Desarrollo del portafolio académico.", certificados: [] }
+        ]
+      },
+      {
+        semestre: "Quinto Semestre",
+        materias: [
+          { nombre: "Portafolio de título", prerrequisitos: "Proceso portafolio de todos los semestres", descripcion: "Presentación del portafolio final para título.", certificados: [] },
+          { nombre: "Práctica profesional", prerrequisitos: "Todas las asignaturas de 1er a 4to semestre", descripcion: "Práctica en campo profesional veterinario.", certificados: [] }
         ]
       }
-      // Puedes agregar más semestres y materias aquí
     ];
 
     const mallaDiv = document.getElementById('malla');
@@ -152,7 +176,7 @@
     function mostrarDetalle(materia) {
       detalleDiv.innerHTML = `
         <h2>${materia.nombre}</h2>
-        <p><strong>Prerrequisitos:</strong> ${materia.prerrequisitos}</p>
+        <p><strong>Prerrequisitos:</strong> ${materia.prerrequisitos ? materia.prerrequisitos : "Ninguno"}</p>
         <p><strong>Descripción:</strong> ${materia.descripcion}</p>
         <p><strong>Certificados:</strong> ${materia.certificados.length > 0 ? materia.certificados.join(', ') : 'Ninguno'}</p>
       `;
