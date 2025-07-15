@@ -6,12 +6,13 @@
 <style>
   body {
     font-family: Arial, sans-serif;
-    background: #f0f4f8;
+    background: #cce7ff; /* Celeste suave */
     margin: 20px;
   }
   h1 {
     text-align: center;
     margin-bottom: 30px;
+    color: #003366;
   }
   #malla {
     display: flex;
@@ -30,6 +31,7 @@
   .semestre h2 {
     text-align: center;
     margin-bottom: 20px;
+    color: #0059b3;
   }
   .materia {
     background: #a6c8ff;
@@ -42,6 +44,7 @@
     position: relative;
     transition: background-color 0.3s, opacity 0.3s;
     box-shadow: 0 3px 6px rgb(0 0 0 / 0.15);
+    width: 180px;
   }
   .materia.aprobada {
     background-color: #4caf50;
@@ -53,18 +56,18 @@
     cursor: not-allowed;
     opacity: 0.5;
   }
-  /* Ajusta tamaño para que todos iguales */
-  .materia {
-    width: 180px;
-  }
-
-  svg {
+  .cinnamoroll-img {
     position: absolute;
-    top: 0; left: 0;
+    width: 50px;
+    user-select: none;
     pointer-events: none;
-    overflow: visible;
-    z-index: 0;
+    opacity: 0.8;
   }
+  /* Posiciones de las imágenes */
+  #img1 { top: 10px; right: 10px; }
+  #img2 { bottom: 15px; left: 15px; }
+  #img3 { top: 50%; left: -30px; transform: translateY(-50%); }
+  #img4 { bottom: 50px; right: -30px; }
 </style>
 </head>
 <body>
@@ -73,11 +76,15 @@
 
 <div id="malla-container" style="position:relative;">
   <div id="malla"></div>
-  <svg id="svg-arrows"></svg>
+  
+  <!-- Imágenes decorativas Cinnamoroll -->
+  <img id="img1" class="cinnamoroll-img" src="https://static.wikia.nocookie.net/sanrio/images/4/4c/Cinnamoroll_icon_4.png" alt="Cinnamoroll" />
+  <img id="img2" class="cinnamoroll-img" src="https://static.wikia.nocookie.net/sanrio/images/4/4c/Cinnamoroll_icon_4.png" alt="Cinnamoroll" />
+  <img id="img3" class="cinnamoroll-img" src="https://static.wikia.nocookie.net/sanrio/images/4/4c/Cinnamoroll_icon_4.png" alt="Cinnamoroll" />
+  <img id="img4" class="cinnamoroll-img" src="https://static.wikia.nocookie.net/sanrio/images/4/4c/Cinnamoroll_icon_4.png" alt="Cinnamoroll" />
 </div>
 
 <script>
-  // Datos actualizados con prerrequisitos (array para mejor manejo)
   const mallaData = [
     {
       semestre: "1er Semestre",
@@ -145,14 +152,10 @@
     }
   ];
 
-  // Estados de materias: aprobada, bloqueada o disponible
-  const estados = {}; // idMateria -> 'aprobada'|'bloqueada'|'disponible'
+  const estados = {};
 
   const mallaDiv = document.getElementById('malla');
-  const svg = document.getElementById('svg-arrows');
-  const container = document.getElementById('malla-container');
 
-  // Inicializar estados (bloquear todas menos las sin prerrequisitos)
   function inicializarEstados() {
     mallaData.forEach(semestre => {
       semestre.materias.forEach(materia => {
@@ -165,7 +168,6 @@
     });
   }
 
-  // Crear elementos materia
   function crearMalla() {
     mallaDiv.innerHTML = "";
     mallaData.forEach((semestre, i) => {
@@ -190,7 +192,6 @@
     });
   }
 
-  // Actualizar estados visuales de materias
   function actualizarVisual() {
     Object.keys(estados).forEach(id => {
       const el = document.getElementById(id);
@@ -213,10 +214,9 @@
     });
   }
 
-  // Lógica para cuando se clickea materia
   function clickMateria(materia) {
     const id = materia.id;
-    if (estados[id] === "bloqueada") return; // ignorar si bloqueada
+    if (estados[id] === "bloqueada") return;
 
     if (estados[id] === "aprobada") {
       estados[id] = "disponible";
@@ -226,16 +226,13 @@
 
     actualizarDesbloqueo();
     actualizarVisual();
-    dibujarFlechas();
   }
 
-  // Verificar y actualizar desbloqueo según aprobadas
   function actualizarDesbloqueo() {
     mallaData.forEach(semestre => {
       semestre.materias.forEach(materia => {
-        if (estados[materia.id] === "aprobada") return; // ya aprobada
+        if (estados[materia.id] === "aprobada") return;
 
-        // Verificar si todos los prerrequisitos están aprobados
         const pre = materia.prerrequisitos;
         if (pre.length === 0) {
           estados[materia.id] = "disponible";
@@ -247,80 +244,10 @@
     });
   }
 
-  // Dibujar flechas entre materias y sus prerrequisitos usando SVG
-  function dibujarFlechas() {
-    svg.innerHTML = "";
-    const svgNS = "http://www.w3.org/2000/svg";
-
-    // Ajustar tamaño svg al contenedor
-    const rect = container.getBoundingClientRect();
-    svg.style.width = rect.width + "px";
-    svg.style.height = rect.height + "px";
-
-    // Definir marcador para flechas
-    let marker = document.createElementNS(svgNS, "marker");
-    marker.setAttribute("id", "arrowhead");
-    marker.setAttribute("markerWidth", "10");
-    marker.setAttribute("markerHeight", "7");
-    marker.setAttribute("refX", "0");
-    marker.setAttribute("refY", "3.5");
-    marker.setAttribute("orient", "auto");
-    marker.setAttribute("markerUnits", "strokeWidth");
-
-    let path = document.createElementNS(svgNS, "path");
-    path.setAttribute("d", "M0,0 L0,7 L10,3.5 z");
-    path.setAttribute("fill", "#555");
-    marker.appendChild(path);
-
-    let defs = document.createElementNS(svgNS, "defs");
-    defs.appendChild(marker);
-    svg.appendChild(defs);
-
-    mallaData.forEach(semestre => {
-      semestre.materias.forEach(materia => {
-        const elemDestino = document.getElementById(materia.id);
-        if (!elemDestino) return;
-
-        materia.prerrequisitos.forEach(preId => {
-          const elemOrigen = document.getElementById(preId);
-          if (!elemOrigen) return;
-
-          // Obtener posición central de cada materia (relativo al contenedor)
-          const origenRect = elemOrigen.getBoundingClientRect();
-          const destinoRect = elemDestino.getBoundingClientRect();
-          const containerRect = container.getBoundingClientRect();
-
-          const startX = origenRect.right - containerRect.left;
-          const startY = origenRect.top + origenRect.height/2 - containerRect.top;
-
-          const endX = destinoRect.left - containerRect.left;
-          const endY = destinoRect.top + destinoRect.height/2 - containerRect.top;
-
-          // Crear línea curva (bezier)
-          const path = document.createElementNS(svgNS, "path");
-          path.setAttribute("stroke", "#555");
-          path.setAttribute("stroke-width", "2");
-          path.setAttribute("fill", "none");
-          path.setAttribute("marker-end", "url(#arrowhead)");
-
-          // Curva simple horizontal
-          const dx = (endX - startX)/2;
-          const d = `M${startX},${startY} C${startX+dx},${startY} ${endX - dx},${endY} ${endX},${endY}`;
-          path.setAttribute("d", d);
-
-          svg.appendChild(path);
-        });
-      });
-    });
-  }
-
-  // Inicializar todo
   function init() {
     inicializarEstados();
     crearMalla();
     actualizarVisual();
-    dibujarFlechas();
-    window.addEventListener("resize", dibujarFlechas);
   }
 
   init();
