@@ -1,226 +1,330 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Malla Interactiva Técnico Veterinario</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: auto; padding: 20px; background: #f9f9f9; }
-    h1 { text-align: center; }
-    .semestre { margin-bottom: 15px; background: white; border-radius: 6px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .semestre-header {
-      padding: 10px 15px;
-      background: #4a90e2;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-      user-select: none;
-      border-radius: 6px 6px 0 0;
-    }
-    .materias-list {
-      display: none;
-      padding: 10px 20px;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .materia {
-      padding: 8px;
-      border-bottom: 1px solid #ddd;
-      cursor: pointer;
-    }
-    .materia:hover {
-      background-color: #e6f0ff;
-    }
-    .materia.active {
-      background-color: #c2dafd;
-      font-weight: bold;
-    }
-    #detalle {
-      margin-top: 20px;
-      background: white;
-      padding: 15px;
-      border-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      min-height: 150px;
-    }
-    #search {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Malla Curricular Interactiva - Técnico Veterinario</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f4f8;
+    margin: 20px;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  #malla {
+    display: flex;
+    gap: 40px;
+    overflow-x: auto;
+    padding-bottom: 50px;
+  }
+  .semestre {
+    min-width: 220px;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
+    position: relative;
+  }
+  .semestre h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .materia {
+    background: #a6c8ff;
+    margin: 10px auto;
+    padding: 12px;
+    border-radius: 14px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    transition: background-color 0.3s, opacity 0.3s;
+    box-shadow: 0 3px 6px rgb(0 0 0 / 0.15);
+  }
+  .materia.aprobada {
+    background-color: #4caf50;
+    color: white;
+  }
+  .materia.bloqueada {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  /* Ajusta tamaño para que todos iguales */
+  .materia {
+    width: 180px;
+  }
+
+  svg {
+    position: absolute;
+    top: 0; left: 0;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 0;
+  }
+</style>
 </head>
 <body>
 
-  <h1>Malla Curricular - Técnico Veterinario</h1>
-  
-  <input type="text" id="search" placeholder="Buscar materia..." />
+<h1>Malla Curricular Técnico Veterinario</h1>
 
+<div id="malla-container" style="position:relative;">
   <div id="malla"></div>
+  <svg id="svg-arrows"></svg>
+</div>
 
-  <div id="detalle">
-    <em>Selecciona una materia para ver detalles aquí.</em>
-  </div>
+<script>
+  // Datos actualizados con prerrequisitos (array para mejor manejo)
+  const mallaData = [
+    {
+      semestre: "1er Semestre",
+      materias: [
+        { id: "exploracion", nombre: "Exploración clínica", prerrequisitos: [] },
+        { id: "prevencion", nombre: "Prevención y control de enfermedades", prerrequisitos: [] },
+        { id: "dietas", nombre: "Dietas para la producción de animales", prerrequisitos: [] },
+        { id: "habilidades-basicas", nombre: "Habilidades básicas de comunicación", prerrequisitos: [] },
+        { id: "herramientas-tec", nombre: "Herramientas tecnológicas para la información y comunicación", prerrequisitos: [] },
+        { id: "nivelacion-mate", nombre: "Nivelación matemática", prerrequisitos: [] },
+        { id: "proceso-portafolio1", nombre: "Proceso portafolio", prerrequisitos: [] }
+      ]
+    },
+    {
+      semestre: "2do Semestre",
+      materias: [
+        { id: "asistencia-quirurgica", nombre: "Asistencia quirúrgica", prerrequisitos: ["exploracion"] },
+        { id: "enfermeria-clinica", nombre: "Enfermería clínica animal", prerrequisitos: ["prevencion"] },
+        { id: "reproduccion", nombre: "Reproducción y obstetricia pecuaria", prerrequisitos: [] },
+        { id: "habilidades-efectiva", nombre: "Habilidades de comunicación efectiva", prerrequisitos: ["habilidades-basicas"] },
+        { id: "tecnicas-lab", nombre: "Técnicas de laboratorio", prerrequisitos: [] },
+        { id: "proceso-portafolio2", nombre: "Proceso portafolio", prerrequisitos: [] }
+      ]
+    },
+    {
+      semestre: "3er Semestre",
+      materias: [
+        { id: "primeros-auxilios", nombre: "Primeros auxilios en mascotas", prerrequisitos: ["enfermeria-clinica","reproduccion"] },
+        { id: "proc-quirurgicos", nombre: "Procedimientos quirúrgicos y terapéuticos en mascotas", prerrequisitos: ["enfermeria-clinica","reproduccion"] },
+        { id: "adiestramiento-canino", nombre: "Adiestramiento canino", prerrequisitos: [] },
+        { id: "aves", nombre: "Aves", prerrequisitos: [] },
+        { id: "imagenologia", nombre: "Imagenología", prerrequisitos: ["tecnicas-lab"] },
+        { id: "ingles1", nombre: "Inglés básico 1", prerrequisitos: [] },
+        { id: "antropologia", nombre: "Fundamentos de antropología", prerrequisitos: [] },
+        { id: "formacion-complementaria3", nombre: "Formación complementaria", prerrequisitos: [] },
+        { id: "proceso-portafolio3", nombre: "Proceso portafolio", prerrequisitos: [] }
+      ]
+    },
+    {
+      semestre: "4to Semestre",
+      materias: [
+        { id: "mascotas-exoticas", nombre: "Mascotas exóticas", prerrequisitos: [] },
+        { id: "gestion-centros", nombre: "Apoyo a la gestión de centros veterinarios", prerrequisitos: [] },
+        { id: "cuidados-esteticos", nombre: "Cuidados estéticos", prerrequisitos: [] },
+        { id: "labores-criaderos", nombre: "Labores de criaderos", prerrequisitos: ["reproduccion"] },
+        { id: "mentalidad-emprendedora", nombre: "Mentalidad emprendedora", prerrequisitos: [] },
+        { id: "ingles2", nombre: "Inglés básico 2", prerrequisitos: ["ingles1"] },
+        { id: "etica-trabajo", nombre: "Ética para el trabajo", prerrequisitos: ["antropologia"] },
+        { id: "formacion-cristiana", nombre: "Curso formación cristiana", prerrequisitos: [] },
+        { id: "formacion-complementaria4", nombre: "Formación complementaria", prerrequisitos: [] },
+        { id: "proceso-portafolio4", nombre: "Proceso portafolio", prerrequisitos: [] }
+      ]
+    },
+    {
+      semestre: "5to Semestre",
+      materias: [
+        { id: "portafolio-titulo", nombre: "Portafolio de título", prerrequisitos: ["proceso-portafolio1", "proceso-portafolio2", "proceso-portafolio3", "proceso-portafolio4"] },
+        { id: "practica-profesional", nombre: "Práctica profesional", prerrequisitos: [
+          "exploracion","prevencion","dietas","habilidades-basicas","herramientas-tec","nivelacion-mate","proceso-portafolio1",
+          "asistencia-quirurgica","enfermeria-clinica","reproduccion","habilidades-efectiva","tecnicas-lab","proceso-portafolio2",
+          "primeros-auxilios","proc-quirurgicos","adiestramiento-canino","aves","imagenologia","ingles1","antropologia","formacion-complementaria3","proceso-portafolio3",
+          "mascotas-exoticas","gestion-centros","cuidados-esteticos","labores-criaderos","mentalidad-emprendedora","ingles2","etica-trabajo","formacion-cristiana","formacion-complementaria4","proceso-portafolio4"
+        ] }
+      ]
+    }
+  ];
 
-  <script>
-    const mallaData = [
-      {
-        semestre: "Primer Semestre",
-        materias: [
-          { nombre: "Exploración clínica", prerrequisitos: "", descripcion: "Asignatura básica sin prerrequisitos.", certificados: [] },
-          { nombre: "Prevención y control de enfermedades", prerrequisitos: "", descripcion: "Prevención y control sanitario en animales.", certificados: [] },
-          { nombre: "Dietas para la producción de animales", prerrequisitos: "", descripcion: "Nutrición y dietas para animales de producción.", certificados: [] },
-          { nombre: "Habilidades básicas de comunicación", prerrequisitos: "", descripcion: "Comunicación efectiva en el entorno veterinario.", certificados: [] },
-          { nombre: "Herramientas tecnológicas para la información y comunicación", prerrequisitos: "", descripcion: "Uso de tecnologías para el manejo de información.", certificados: [] },
-          { nombre: "Nivelación matemática", prerrequisitos: "", descripcion: "Matemáticas básicas para veterinaria.", certificados: [] },
-          { nombre: "Proceso portafolio", prerrequisitos: "", descripcion: "Desarrollo del portafolio académico.", certificados: [] }
-        ]
-      },
-      {
-        semestre: "Segundo Semestre",
-        materias: [
-          { nombre: "Asistencia quirúrgica", prerrequisitos: "Exploración clínica", descripcion: "Apoyo en procedimientos quirúrgicos.", certificados: [] },
-          { nombre: "Enfermería clínica animal", prerrequisitos: "Prevención y control de enfermedades", descripcion: "Cuidados clínicos para animales.", certificados: [] },
-          { nombre: "Reproducción y obstetricia pecuaria", prerrequisitos: "", descripcion: "Aspectos reproductivos y obstétricos en animales pecuarios.", certificados: [] },
-          { nombre: "Habilidades de comunicación efectiva", prerrequisitos: "Habilidades básicas de comunicación", descripcion: "Comunicación avanzada en el campo veterinario.", certificados: [] },
-          { nombre: "Técnicas de laboratorio", prerrequisitos: "", descripcion: "Procedimientos básicos de laboratorio.", certificados: [] },
-          { nombre: "Proceso portafolio", prerrequisitos: "", descripcion: "Desarrollo del portafolio académico.", certificados: [] }
-        ]
-      },
-      {
-        semestre: "Tercer Semestre",
-        materias: [
-          { nombre: "Primeros auxilios en mascotas", prerrequisitos: "Enfermería clínica animal, Reproducción y obstetricia pecuaria", descripcion: "Atención inicial en emergencias veterinarias.", certificados: [] },
-          { nombre: "Procedimientos quirúrgicos y terapéuticos en mascotas", prerrequisitos: "Enfermería clínica animal, Reproducción y obstetricia pecuaria", descripcion: "Técnicas quirúrgicas y terapéuticas para mascotas.", certificados: [] },
-          { nombre: "Adiestramiento canino", prerrequisitos: "", descripcion: "Técnicas básicas de adiestramiento para perros.", certificados: [] },
-          { nombre: "Aves", prerrequisitos: "", descripcion: "Cuidados y manejo de aves.", certificados: [] },
-          { nombre: "Imagenología", prerrequisitos: "Técnicas de laboratorio", descripcion: "Uso de técnicas de imagen para diagnóstico.", certificados: [] },
-          { nombre: "Inglés básico 1", prerrequisitos: "", descripcion: "Inglés básico aplicado a la veterinaria.", certificados: [] },
-          { nombre: "Fundamentos de antropología", prerrequisitos: "", descripcion: "Bases antropológicas para el trabajo veterinario.", certificados: [] },
-          { nombre: "Formación complementaria", prerrequisitos: "", descripcion: "Cursos complementarios varios.", certificados: [] },
-          { nombre: "Proceso portafolio", prerrequisitos: "", descripcion: "Desarrollo del portafolio académico.", certificados: [] }
-        ]
-      },
-      {
-        semestre: "Cuarto Semestre",
-        materias: [
-          { nombre: "Mascotas exóticas", prerrequisitos: "", descripcion: "Manejo de mascotas no convencionales.", certificados: [] },
-          { nombre: "Apoyo a la gestión de centros veterinarios", prerrequisitos: "", descripcion: "Administración y gestión en centros veterinarios.", certificados: [] },
-          { nombre: "Cuidados estéticos", prerrequisitos: "", descripcion: "Técnicas de estética para animales.", certificados: [] },
-          { nombre: "Labores de criaderos", prerrequisitos: "Reproducción y obstetricia pecuaria", descripcion: "Manejo y labores en criaderos.", certificados: [] },
-          { nombre: "Mentalidad emprendedora", prerrequisitos: "", descripcion: "Desarrollo de habilidades emprendedoras.", certificados: [] },
-          { nombre: "Inglés básico 2", prerrequisitos: "Inglés básico 1", descripcion: "Inglés intermedio aplicado.", certificados: [] },
-          { nombre: "Ética para el trabajo", prerrequisitos: "Fundamentos de antropología", descripcion: "Valores y ética profesional.", certificados: [] },
-          { nombre: "Curso formación cristiana", prerrequisitos: "", descripcion: "Formación religiosa y ética.", certificados: [] },
-          { nombre: "Formación complementaria", prerrequisitos: "", descripcion: "Cursos complementarios varios.", certificados: [] },
-          { nombre: "Proceso portafolio", prerrequisitos: "", descripcion: "Desarrollo del portafolio académico.", certificados: [] }
-        ]
-      },
-      {
-        semestre: "Quinto Semestre",
-        materias: [
-          { nombre: "Portafolio de título", prerrequisitos: "Proceso portafolio de todos los semestres", descripcion: "Presentación del portafolio final para título.", certificados: [] },
-          { nombre: "Práctica profesional", prerrequisitos: "Todas las asignaturas de 1er a 4to semestre", descripcion: "Práctica en campo profesional veterinario.", certificados: [] }
-        ]
+  // Estados de materias: aprobada, bloqueada o disponible
+  const estados = {}; // idMateria -> 'aprobada'|'bloqueada'|'disponible'
+
+  const mallaDiv = document.getElementById('malla');
+  const svg = document.getElementById('svg-arrows');
+  const container = document.getElementById('malla-container');
+
+  // Inicializar estados (bloquear todas menos las sin prerrequisitos)
+  function inicializarEstados() {
+    mallaData.forEach(semestre => {
+      semestre.materias.forEach(materia => {
+        if (materia.prerrequisitos.length === 0) {
+          estados[materia.id] = 'disponible';
+        } else {
+          estados[materia.id] = 'bloqueada';
+        }
+      });
+    });
+  }
+
+  // Crear elementos materia
+  function crearMalla() {
+    mallaDiv.innerHTML = "";
+    mallaData.forEach((semestre, i) => {
+      const semDiv = document.createElement("div");
+      semDiv.className = "semestre";
+      semDiv.id = `semestre-${i}`;
+      const title = document.createElement("h2");
+      title.textContent = semestre.semestre;
+      semDiv.appendChild(title);
+
+      semestre.materias.forEach(materia => {
+        const matDiv = document.createElement("div");
+        matDiv.className = "materia";
+        matDiv.id = materia.id;
+        matDiv.textContent = materia.nombre;
+        matDiv.title = materia.nombre;
+        matDiv.addEventListener("click", () => clickMateria(materia));
+        semDiv.appendChild(matDiv);
+      });
+
+      mallaDiv.appendChild(semDiv);
+    });
+  }
+
+  // Actualizar estados visuales de materias
+  function actualizarVisual() {
+    Object.keys(estados).forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.remove("aprobada", "bloqueada", "disponible");
+
+      if (estados[id] === "aprobada") {
+        el.classList.add("aprobada");
+        el.style.pointerEvents = "auto";
+        el.style.opacity = "1";
+      } else if (estados[id] === "bloqueada") {
+        el.classList.add("bloqueada");
+        el.style.pointerEvents = "none";
+        el.style.opacity = "0.5";
+      } else {
+        el.classList.add("disponible");
+        el.style.pointerEvents = "auto";
+        el.style.opacity = "1";
       }
-    ];
+    });
+  }
 
-    const mallaDiv = document.getElementById('malla');
-    const detalleDiv = document.getElementById('detalle');
-    const searchInput = document.getElementById('search');
+  // Lógica para cuando se clickea materia
+  function clickMateria(materia) {
+    const id = materia.id;
+    if (estados[id] === "bloqueada") return; // ignorar si bloqueada
 
-    function crearMalla(data) {
-      mallaDiv.innerHTML = '';
-      data.forEach((sem, i) => {
-        const semDiv = document.createElement('div');
-        semDiv.className = 'semestre';
-
-        const header = document.createElement('div');
-        header.className = 'semestre-header';
-        header.textContent = sem.semestre;
-        header.addEventListener('click', () => {
-          const list = semDiv.querySelector('.materias-list');
-          if (list.style.display === 'block') {
-            list.style.display = 'none';
-          } else {
-            list.style.display = 'block';
-          }
-        });
-        semDiv.appendChild(header);
-
-        const list = document.createElement('div');
-        list.className = 'materias-list';
-
-        sem.materias.forEach((mat) => {
-          const matDiv = document.createElement('div');
-          matDiv.className = 'materia';
-          matDiv.textContent = mat.nombre;
-          matDiv.addEventListener('click', () => {
-            // Quitar active de otras materias
-            document.querySelectorAll('.materia').forEach(m => m.classList.remove('active'));
-            matDiv.classList.add('active');
-
-            mostrarDetalle(mat);
-          });
-          list.appendChild(matDiv);
-        });
-
-        semDiv.appendChild(list);
-        mallaDiv.appendChild(semDiv);
-      });
+    if (estados[id] === "aprobada") {
+      estados[id] = "disponible";
+    } else {
+      estados[id] = "aprobada";
     }
 
-    function mostrarDetalle(materia) {
-      detalleDiv.innerHTML = `
-        <h2>${materia.nombre}</h2>
-        <p><strong>Prerrequisitos:</strong> ${materia.prerrequisitos ? materia.prerrequisitos : "Ninguno"}</p>
-        <p><strong>Descripción:</strong> ${materia.descripcion}</p>
-        <p><strong>Certificados:</strong> ${materia.certificados.length > 0 ? materia.certificados.join(', ') : 'Ninguno'}</p>
-      `;
-    }
+    actualizarDesbloqueo();
+    actualizarVisual();
+    dibujarFlechas();
+  }
 
-    function filtrarMaterias() {
-      const filtro = searchInput.value.toLowerCase();
+  // Verificar y actualizar desbloqueo según aprobadas
+  function actualizarDesbloqueo() {
+    mallaData.forEach(semestre => {
+      semestre.materias.forEach(materia => {
+        if (estados[materia.id] === "aprobada") return; // ya aprobada
 
-      mallaData.forEach((sem) => {
-        sem.materias.forEach(mat => {
-          mat.visible = mat.nombre.toLowerCase().includes(filtro);
+        // Verificar si todos los prerrequisitos están aprobados
+        const pre = materia.prerrequisitos;
+        if (pre.length === 0) {
+          estados[materia.id] = "disponible";
+        } else {
+          const todosAprobados = pre.every(pid => estados[pid] === "aprobada");
+          estados[materia.id] = todosAprobados ? "disponible" : "bloqueada";
+        }
+      });
+    });
+  }
+
+  // Dibujar flechas entre materias y sus prerrequisitos usando SVG
+  function dibujarFlechas() {
+    svg.innerHTML = "";
+    const svgNS = "http://www.w3.org/2000/svg";
+
+    // Ajustar tamaño svg al contenedor
+    const rect = container.getBoundingClientRect();
+    svg.style.width = rect.width + "px";
+    svg.style.height = rect.height + "px";
+
+    // Definir marcador para flechas
+    let marker = document.createElementNS(svgNS, "marker");
+    marker.setAttribute("id", "arrowhead");
+    marker.setAttribute("markerWidth", "10");
+    marker.setAttribute("markerHeight", "7");
+    marker.setAttribute("refX", "0");
+    marker.setAttribute("refY", "3.5");
+    marker.setAttribute("orient", "auto");
+    marker.setAttribute("markerUnits", "strokeWidth");
+
+    let path = document.createElementNS(svgNS, "path");
+    path.setAttribute("d", "M0,0 L0,7 L10,3.5 z");
+    path.setAttribute("fill", "#555");
+    marker.appendChild(path);
+
+    let defs = document.createElementNS(svgNS, "defs");
+    defs.appendChild(marker);
+    svg.appendChild(defs);
+
+    mallaData.forEach(semestre => {
+      semestre.materias.forEach(materia => {
+        const elemDestino = document.getElementById(materia.id);
+        if (!elemDestino) return;
+
+        materia.prerrequisitos.forEach(preId => {
+          const elemOrigen = document.getElementById(preId);
+          if (!elemOrigen) return;
+
+          // Obtener posición central de cada materia (relativo al contenedor)
+          const origenRect = elemOrigen.getBoundingClientRect();
+          const destinoRect = elemDestino.getBoundingClientRect();
+          const containerRect = container.getBoundingClientRect();
+
+          const startX = origenRect.right - containerRect.left;
+          const startY = origenRect.top + origenRect.height/2 - containerRect.top;
+
+          const endX = destinoRect.left - containerRect.left;
+          const endY = destinoRect.top + destinoRect.height/2 - containerRect.top;
+
+          // Crear línea curva (bezier)
+          const path = document.createElementNS(svgNS, "path");
+          path.setAttribute("stroke", "#555");
+          path.setAttribute("stroke-width", "2");
+          path.setAttribute("fill", "none");
+          path.setAttribute("marker-end", "url(#arrowhead)");
+
+          // Curva simple horizontal
+          const dx = (endX - startX)/2;
+          const d = `M${startX},${startY} C${startX+dx},${startY} ${endX - dx},${endY} ${endX},${endY}`;
+          path.setAttribute("d", d);
+
+          svg.appendChild(path);
         });
       });
+    });
+  }
 
-      // Actualizar la vista con solo materias visibles
-      mallaDiv.querySelectorAll('.semestre').forEach((semDiv, i) => {
-        const materiasDiv = semDiv.querySelector('.materias-list');
-        const materias = materiasDiv.querySelectorAll('.materia');
-        let anyVisible = false;
+  // Inicializar todo
+  function init() {
+    inicializarEstados();
+    crearMalla();
+    actualizarVisual();
+    dibujarFlechas();
+    window.addEventListener("resize", dibujarFlechas);
+  }
 
-        materias.forEach((matDiv, j) => {
-          const visible = mallaData[i].materias[j].visible;
-          matDiv.style.display = visible ? 'block' : 'none';
-          if (visible) anyVisible = true;
-        });
+  init();
+</script>
 
-        // Mostrar o esconder semestre según materias visibles
-        materiasDiv.style.display = anyVisible ? 'block' : 'none';
-        semDiv.querySelector('.semestre-header').style.display = anyVisible ? 'block' : 'none';
-      });
-
-      // Limpiar detalle si el seleccionado ya no es visible
-      const activo = document.querySelector('.materia.active');
-      if (activo && activo.style.display === 'none') {
-        detalleDiv.innerHTML = `<em>Selecciona una materia para ver detalles aquí.</em>`;
-      }
-    }
-
-    // Inicializar la malla completa
-    crearMalla(mallaData);
-
-    // Buscar mientras escribes
-    searchInput.addEventListener('input', filtrarMaterias);
-
-  </script>
 </body>
 </html>
